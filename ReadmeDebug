@@ -1,0 +1,2 @@
+
+./configure CXXFLAGS="-g3 -gdwarf-2 -DDEBUG"

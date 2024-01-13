@@ -1,0 +1,184 @@
+/***************************************************************************
+ *   Copyright (C) 2008 by Heikki Pulkkinen   *
+ *   heikki@localhost   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef LOGICANALYZERQLISBOXITEMS_H
+#define LOGICANALYZERQLISBOXITEMS_H
+
+#include "LogicAnalyzerW.h"
+
+#include <qlistbox.h>
+#include <qpainter.h>
+#include <cmath>
+
+class DataLogger;
+class QListBoxItem;
+
+namespace WaveViewPainter_NameS
+{
+}
+
+class WaveViewPainter
+{
+	public:
+		WaveViewPainter(int const itemHeight, int *pToListBoxWidth, list<double> *pToTimeList, list<unsigned long> *pToMachineCyclesValueList, list<unsigned long> *pToProgramCounterValueList, DataLogger *pToDataList, unsigned long long *pToTimeAxelMultiplier, int *pToTimeAxelSliderValue, bool *pToRasterOnValue, unsigned long *pToPointed_x, int *pToHScrollBValue, int *pToStartMachineCycle);
+		~WaveViewPainter();
+
+		void paintW(QPainter *p, bool const selected);
+		int height(void) const;
+		int width(void) const;
+
+		unsigned long pointedMachineCycleValue(int const pointed_x_value);
+		unsigned long pointedPointPainted_x_Value(void);
+		unsigned long machineCycle_x_Value(unsigned long &cycleNumber);
+		unsigned long paintStart_x_Value(void)const;
+		unsigned long paintEnd_x_Value(void)const;
+		unsigned long lastPaintedTimeChange_x_Value(void);
+
+		static unsigned int const MAX_PIXELSTOPAINT_=30000;
+		static unsigned int const MAX_POINTEDPOINT_PAINT_X_=10000;
+		
+	protected:
+		QPainter *painter_;
+		QPen pen_;
+		bool dataListValue_;
+		unsigned long mCycle_;
+		unsigned long pCounter_;
+		long long last_x_;
+		long long new_x_;
+		long long start_x_;
+		long long end_x_;
+		unsigned long lastPaintedTimeChange_x_;
+		int paintStart_x_;
+		int paintEnd_x_;
+		double timeCal_;
+		double timeAdd_;
+		double timePointedPoint_;
+		virtual inline void paintStartValues(void);
+		virtual inline void paintBeforeMainPaint(void);
+		virtual inline void paintPointedPoint(void);
+		virtual inline void paintWhenCycle(void);
+		virtual inline void paintWhenNotCycle(void);
+		virtual inline void paintAfterNewXCalc(void);
+		virtual inline void paintBeforeExit(const bool notPaintedAll);
+
+		int thisHeight_;
+		int thisWidth_;
+		int *pToListBoxWidth_;
+		list<double> *pToTimeList_;
+		list<unsigned long> *pToMachineCyclesValueList_;
+		list<unsigned long> *pToProgramCounterValueList_;
+		DataLogger *pToDataList_;
+		unsigned long long *pToTimeAxelMultiplier_;
+		int *pToTimeAxelSliderValue_;
+		bool *pToRasterOn_;
+		unsigned long *pToPointed_x_;
+		int *pToHScrollBValue_;
+		int *pToStartMachineCycle_;
+		bool selected_;
+
+	private:
+		WaveViewPainter(){};
+		bool draw_;
+		inline void startDraw(void);
+		bool paintCycleLines_;
+		void clearValues(void);
+		int last_y_;
+		int new_y_;
+		vector<unsigned long>pointedMachineCycleValueVector_;
+		vector<unsigned long>machineCycleXVector_;
+		unsigned long pointedMachineCycleValueLastPaint_x_;
+		bool pointedXSet_;
+		unsigned long pointedXSet_PointValue_;
+		long long pointedPixel_x_;
+		unsigned long paintPointedPointLoopValue_;
+		QColor wavePaintColor_;
+
+};
+
+class WaveViewQListBoxItem : public QListBoxItem
+{
+	public:
+		WaveViewQListBoxItem(int const itemHeight, int *pToListBoxWidth, list<double> *pToTimeList, list<unsigned long> *pToMachineCyclesValueList, list<unsigned long> *pToProgramCounterValueList,DataLogger *pToDataList, unsigned long long *pToTimeAxelMultiplier, int *pToTimeAxelSliderValue, bool *pToRasterOnValue, unsigned long *pToPointed_x, int *pToHScrollBValue_, int *pToStartMachineCycle);
+		~WaveViewQListBoxItem();
+
+		int height(const QListBox *lb) const;
+		int width(const QListBox *lb) const;
+		int paintedWidth(void) const;
+		long pointedMachineCycle(int const pointed_x_value);
+		unsigned long pointedPointPainted_x(void);
+		unsigned long machineCycle_x(unsigned long &cycleNumber);
+		unsigned long paintStart_x(void);
+		unsigned long paintEnd_x(void);
+		unsigned long lastPaintedTimeChange_x(void);
+	
+	protected:
+		void paint(QPainter *);
+
+	private:
+		WaveViewPainter* wPainter_;
+
+};
+
+class TextViewPainter : public WaveViewPainter
+{
+	public:
+		TextViewPainter(int const itemHeight, int *pToListBoxWidth, list<double> *pToTimeList, list<unsigned long> *pToMachineCyclesValueList, list<unsigned long> *pToProgramCounterValueList, DataLogger *pToDataList, unsigned long long *pToTimeAxelMultiplier, int *pToTimeAxelSliderValue, bool *pToRasterOnValue, unsigned long *pToPointed_x, int *pToHScrollBValue, int *pToStartMachineCycle);
+		~TextViewPainter();
+		
+	protected:
+		virtual inline void paintStartValues(void);
+		virtual inline void paintBeforeMainPaint(void);
+		virtual inline void paintWhenCycle(void);
+		virtual inline void paintWhenNotCycle(void);
+		virtual inline void paintAfterNewXCalc(void);
+		virtual inline void paintBeforeExit(const bool notPaintedAll);
+		
+	private:
+		QString pCounterTxt_;
+		QString timeLinesTxt_;
+		double adderToTimeLines_;
+		double tenthPartsAdder_;
+		double hundredsPartsAdder_;
+		double xToTimeLinesCount_;
+		int linesCount_;
+		int yhp2_;
+		bool paintCycleText_;
+		QColor paintColor_;
+};
+
+class TextViewQListBoxItem : public QListBoxItem
+{
+	public:
+		TextViewQListBoxItem(int const itemHeight, int *pToListBoxWidth, list<double> *pToTimeList, list<unsigned long> *pToMachineCyclesValueList, list<unsigned long> *pToProgramCounterValueList, DataLogger *pToDataList, unsigned long long *pToTimeAxelMultiplier, int *pToTimeAxelSliderValue, bool *pToRasterOnValue, unsigned long *pToPointed_x, int *pToHScrollBValue, int *pToStartMachineCycle);
+		~TextViewQListBoxItem();
+
+		int height(const QListBox *lb) const;
+		int width(const QListBox *lb) const;
+		long pointedMachineCycle(int const pointed_x_value);
+		bool painted(bool const reset);
+		
+	protected:
+		void paint(QPainter *);
+		
+	private:
+		TextViewPainter* tPainter_;
+		bool painted_;
+};
+
+#endif

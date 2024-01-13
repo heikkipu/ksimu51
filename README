@@ -1,0 +1,16 @@
+Fedora37 build
+
+sudo ln -s /usr/bin/kde4-config /usr/bin/kde-config
+
+sudo dnf install qt3
+sudo dnf install qt3-devel
+sudo dnf install kdebase3*
+
+cd ksimu51/
+mkdir debug
+cd debug
+../configure   --with-qt-dir=/usr/lib64/qt-3.3/ --with-qt-libraries=/usr/lib64/qt-3.3/lib --with-qt-includes=/usr/lib64/qt-3.3/include
+make -jx       //x = num cores.
+sudo make install
+
+run in console
